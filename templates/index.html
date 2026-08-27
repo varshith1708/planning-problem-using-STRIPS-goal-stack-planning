@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Red & Black Cyber Gamer Edition Tic Tac Toe AI & Multiplayer Friend Mode with 10-Second Speed Move Timer.">
+  <title>Tic Tac Toe AI & Multiplayer - Gamers Edition</title>
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Ambient Floating Crimson Orbs -->
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+
+  <!-- PAGE 1: GAMER LAUNCHER START SCREEN -->
+  <div class="screen start-screen active" id="startScreen">
+    <div class="launcher-card">
+      <div class="launcher-badge">🎮 MULTIPLAYER &amp; AI EDITION</div>
+      <h1 class="launcher-title">
+        <span class="accent-x">TIC</span> 
+        <span class="accent-o">TAC</span> 
+        TOE <br>
+        <span class="accent-glow">ARENA</span>
+      </h1>
+      <p class="launcher-desc">10-Second Move Timer • Solo AI vs 2-Player Friend Mode</p>
+
+      <!-- Game Mode Selector -->
+      <div class="mode-section">
+        <label class="section-label">1. SELECT GAME MODE</label>
+        <div class="mode-picker">
+          <button class="mode-btn active" data-mode="ai" id="btnModeAi">
+            <span>🤖 VS AI CORE</span>
+          </button>
+          <button class="mode-btn" data-mode="multiplayer" id="btnModeMulti">
+            <span>👥 VS FRIEND (2P)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Player 1 Profile -->
+      <div class="profile-section">
+        <label class="section-label" id="lblPlayer1">2. PLAYER 1 PROFILE</label>
+        <div class="avatar-picker" id="avatarPickerP1">
+          <button class="avatar-btn active" data-avatar="⚡">⚡</button>
+          <button class="avatar-btn" data-avatar="🥷">🥷</button>
+          <button class="avatar-btn" data-avatar="🐉">🐉</button>
+          <button class="avatar-btn" data-avatar="👾">👾</button>
+          <button class="avatar-btn" data-avatar="👑">👑</button>
+          <button class="avatar-btn" data-avatar="🦁">🦁</button>
+        </div>
+        <input type="text" id="gamerNameInput" class="gamer-input" value="PLAYER 1" maxlength="12" placeholder="P1 Gamer Tag...">
+      </div>
+
+      <!-- Player 2 Profile (Visible in Multiplayer Mode) -->
+      <div class="profile-section hidden" id="p2ProfileSection">
+        <label class="section-label">3. PLAYER 2 (FRIEND) PROFILE</label>
+        <div class="avatar-picker" id="avatarPickerP2">
+          <button class="avatar-btn" data-avatar="🔥">🔥</button>
+          <button class="avatar-btn active" data-avatar="🎯">🎯</button>
+          <button class="avatar-btn" data-avatar="💀">💀</button>
+          <button class="avatar-btn" data-avatar="🤖">🤖</button>
+          <button class="avatar-btn" data-avatar="🚀">🚀</button>
+          <button class="avatar-btn" data-avatar="⚔️">⚔️</button>
+        </div>
+        <input type="text" id="gamer2NameInput" class="gamer-input" value="PLAYER 2" maxlength="12" placeholder="P2 Gamer Tag...">
+      </div>
+
+      <!-- Difficulty Selector (Visible in AI Mode) -->
+      <div class="difficulty-section" id="diffSection">
+        <label class="section-label">3. SELECT AI DIFFICULTY</label>
+        <div class="difficulty-picker" id="difficultyPicker">
+          <button class="diff-btn" data-diff="easy">
+            <span class="diff-title">CASUAL</span>
+            <span class="diff-sub">EASY AI</span>
+          </button>
+          <button class="diff-btn" data-diff="medium">
+            <span class="diff-title">TACTICAL</span>
+            <span class="diff-sub">MEDIUM AI</span>
+          </button>
+          <button class="diff-btn active" data-diff="hard">
+            <span class="diff-title">HARD</span>
+            <span class="diff-sub">UNBEATABLE MINIMAX</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Symbol Picker -->
+      <div class="settings-grid">
+        <div class="setting-card">
+          <label class="section-label">P1 MARK</label>
+          <div class="toggle-group">
+            <button class="toggle-btn active" data-symbol="X">X (RED)</button>
+            <button class="toggle-btn" data-symbol="O">O (WHITE)</button>
+          </div>
+        </div>
+        <div class="setting-card">
+          <label class="section-label">FIRST MOVE</label>
+          <div class="toggle-group">
+            <button class="toggle-btn active" data-starter="player">P1 FIRST</button>
+            <button class="toggle-btn" data-starter="ai" id="btnStarterP2">P2/AI FIRST</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Start Button -->
+      <button class="btn-start" id="enterArenaBtn">
+        🚀 ENTER ARENA &amp; PLAY
+      </button>
+    </div>
+  </div>
+
+  <!-- PAGE 2: MAIN GAMING ARENA -->
+  <div class="screen arena-screen" id="arenaScreen">
+    <main class="app-container">
+      
+      <!-- Top Esports HUD Header -->
+      <div class="esports-hud">
+        <!-- Player 1 Card -->
+        <div class="hud-player-card player-side">
+          <div class="hud-avatar" id="hudPlayerAvatar">⚡</div>
+          <div class="hud-info">
+            <span class="hud-name" id="hudPlayerName">PLAYER 1</span>
+            <span class="hud-symbol symbol-X" id="hudPlayerSymbolBadge">MARK: X</span>
+          </div>
+        </div>
+
+        <div class="hud-vs">VS</div>
+
+        <!-- Player 2 / AI Card -->
+        <div class="hud-player-card ai-side">
+          <div class="hud-info align-right">
+            <span class="hud-name" id="hudP2Name">CYBER AI</span>
+            <span class="hud-sub" id="hudAiDiffBadge">HARD MINIMAX</span>
+          </div>
+          <div class="hud-avatar ai-avatar" id="hudP2Avatar">🤖</div>
+        </div>
+      </div>
+
+      <!-- Live AI Terminal Log Ticker -->
+      <div class="ai-terminal" id="aiTerminal">
+        <span class="terminal-prefix">[SYSTEM LOG]:</span> 
+        <span class="terminal-text" id="terminalText">Arena Ready. Waiting for Player move...</span>
+      </div>
+
+      <!-- Scoreboard HUD -->
+      <section class="scoreboard" aria-label="Game Scores">
+        <div class="score-card player-score">
+          <span class="score-label" id="scoreLabelPlayer">P1</span>
+          <span class="score-value" id="scorePlayer">0</span>
+        </div>
+        <div class="score-card ties-score">
+          <span class="score-label">DRAWS</span>
+          <span class="score-value" id="scoreTies">0</span>
+        </div>
+        <div class="score-card ai-score">
+          <span class="score-label" id="scoreLabelP2">AI</span>
+          <span class="score-value" id="scoreAi">0</span>
+        </div>
+      </section>
+
+      <!-- 10-Second Move Timer Gauge -->
+      <div class="timer-container">
+        <div class="timer-header">
+          <span class="timer-title" id="timerTitle">⏳ MOVE TIMER</span>
+          <span class="timer-seconds" id="timerSeconds">10s</span>
+        </div>
+        <div class="timer-bar-bg">
+          <div class="timer-bar-fill" id="timerBarFill"></div>
+        </div>
+      </div>
+
+      <!-- Turn Status Bar -->
+      <div class="turn-status" id="statusMessage">
+        Your Turn <span class="turn-badge X">X</span>
+      </div>
+
+      <!-- Game Board Grid -->
+      <div class="board-wrapper">
+        <div class="board" id="board" role="grid" aria-label="Tic Tac Toe Grid">
+          <button class="cell" data-index="0" aria-label="Cell 1"></button>
+          <button class="cell" data-index="1" aria-label="Cell 2"></button>
+          <button class="cell" data-index="2" aria-label="Cell 3"></button>
+          <button class="cell" data-index="3" aria-label="Cell 4"></button>
+          <button class="cell" data-index="4" aria-label="Cell 5"></button>
+          <button class="cell" data-index="5" aria-label="Cell 6"></button>
+          <button class="cell" data-index="6" aria-label="Cell 7"></button>
+          <button class="cell" data-index="7" aria-label="Cell 8"></button>
+          <button class="cell" data-index="8" aria-label="Cell 9"></button>
+        </div>
+      </div>
+
+      <!-- Footer Action Buttons -->
+      <footer class="app-actions">
+        <button class="btn-action" id="mainMenuBtn">
+          ⚙️ MENU
+        </button>
+        <button class="btn-action btn-primary" id="resetBtn">
+          🔄 NEW ROUND
+        </button>
+        <button class="btn-action" id="soundToggleBtn">
+          🔊 AUDIO: ON
+        </button>
+        <button class="btn-action btn-icon-only" id="clearScoresBtn" title="Reset Scores">
+          🗑️
+        </button>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Game Over Victory / Defeat Modal -->
+  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-icon" id="modalIcon">🏆</div>
+      <h2 class="modal-title win" id="modalTitle">VICTORY!</h2>
+      <p class="modal-subtitle" id="modalSubtitle">Outstanding strategy!</p>
+      <button class="btn-action btn-primary" id="modalPlayAgain" style="width: 100%; margin-top: 0.5rem;">
+        NEXT ROUND 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript Controller -->
+  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>
