@@ -3,225 +3,500 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Red & Black Cyber Gamer Edition Tic Tac Toe AI & Multiplayer Friend Mode with 10-Second Speed Move Timer.">
-  <title>Tic Tac Toe AI & Multiplayer - Gamers Edition</title>
+  <title>NLP-Based Text Classification and Explainable AI Demo</title>
   
-  <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Inter Font & CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
+  <!-- Chart.js CDN for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Ambient Floating Crimson Orbs -->
-  <div class="bg-orb bg-orb-1"></div>
-  <div class="bg-orb bg-orb-2"></div>
-
-  <!-- PAGE 1: GAMER LAUNCHER START SCREEN -->
-  <div class="screen start-screen active" id="startScreen">
-    <div class="launcher-card">
-      <div class="launcher-badge">🎮 MULTIPLAYER &amp; AI EDITION</div>
-      <h1 class="launcher-title">
-        <span class="accent-x">TIC</span> 
-        <span class="accent-o">TAC</span> 
-        TOE <br>
-        <span class="accent-glow">ARENA</span>
-      </h1>
-      <p class="launcher-desc">10-Second Move Timer • Solo AI vs 2-Player Friend Mode</p>
-
-      <!-- Game Mode Selector -->
-      <div class="mode-section">
-        <label class="section-label">1. SELECT GAME MODE</label>
-        <div class="mode-picker">
-          <button class="mode-btn active" data-mode="ai" id="btnModeAi">
-            <span>🤖 VS AI CORE</span>
-          </button>
-          <button class="mode-btn" data-mode="multiplayer" id="btnModeMulti">
-            <span>👥 VS FRIEND (2P)</span>
-          </button>
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand-icon">🤖</div>
+        <div>
+          <h2>AI Practical Demo</h2>
+          <p>NLP & Explainable AI</p>
         </div>
       </div>
-
-      <!-- Player 1 Profile -->
-      <div class="profile-section">
-        <label class="section-label" id="lblPlayer1">2. PLAYER 1 PROFILE</label>
-        <div class="avatar-picker" id="avatarPickerP1">
-          <button class="avatar-btn active" data-avatar="⚡">⚡</button>
-          <button class="avatar-btn" data-avatar="🥷">🥷</button>
-          <button class="avatar-btn" data-avatar="🐉">🐉</button>
-          <button class="avatar-btn" data-avatar="👾">👾</button>
-          <button class="avatar-btn" data-avatar="👑">👑</button>
-          <button class="avatar-btn" data-avatar="🦁">🦁</button>
-        </div>
-        <input type="text" id="gamerNameInput" class="gamer-input" value="PLAYER 1" maxlength="12" placeholder="P1 Gamer Tag...">
-      </div>
-
-      <!-- Player 2 Profile (Visible in Multiplayer Mode) -->
-      <div class="profile-section hidden" id="p2ProfileSection">
-        <label class="section-label">3. PLAYER 2 (FRIEND) PROFILE</label>
-        <div class="avatar-picker" id="avatarPickerP2">
-          <button class="avatar-btn" data-avatar="🔥">🔥</button>
-          <button class="avatar-btn active" data-avatar="🎯">🎯</button>
-          <button class="avatar-btn" data-avatar="💀">💀</button>
-          <button class="avatar-btn" data-avatar="🤖">🤖</button>
-          <button class="avatar-btn" data-avatar="🚀">🚀</button>
-          <button class="avatar-btn" data-avatar="⚔️">⚔️</button>
-        </div>
-        <input type="text" id="gamer2NameInput" class="gamer-input" value="PLAYER 2" maxlength="12" placeholder="P2 Gamer Tag...">
-      </div>
-
-      <!-- Difficulty Selector (Visible in AI Mode) -->
-      <div class="difficulty-section" id="diffSection">
-        <label class="section-label">3. SELECT AI DIFFICULTY</label>
-        <div class="difficulty-picker" id="difficultyPicker">
-          <button class="diff-btn" data-diff="easy">
-            <span class="diff-title">CASUAL</span>
-            <span class="diff-sub">EASY AI</span>
-          </button>
-          <button class="diff-btn" data-diff="medium">
-            <span class="diff-title">TACTICAL</span>
-            <span class="diff-sub">MEDIUM AI</span>
-          </button>
-          <button class="diff-btn active" data-diff="hard">
-            <span class="diff-title">HARD</span>
-            <span class="diff-sub">UNBEATABLE MINIMAX</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Symbol Picker -->
-      <div class="settings-grid">
-        <div class="setting-card">
-          <label class="section-label">P1 MARK</label>
-          <div class="toggle-group">
-            <button class="toggle-btn active" data-symbol="X">X (RED)</button>
-            <button class="toggle-btn" data-symbol="O">O (WHITE)</button>
-          </div>
-        </div>
-        <div class="setting-card">
-          <label class="section-label">FIRST MOVE</label>
-          <div class="toggle-group">
-            <button class="toggle-btn active" data-starter="player">P1 FIRST</button>
-            <button class="toggle-btn" data-starter="ai" id="btnStarterP2">P2/AI FIRST</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Start Button -->
-      <button class="btn-start" id="enterArenaBtn">
-        🚀 ENTER ARENA &amp; PLAY
-      </button>
-    </div>
-  </div>
-
-  <!-- PAGE 2: MAIN GAMING ARENA -->
-  <div class="screen arena-screen" id="arenaScreen">
-    <main class="app-container">
       
-      <!-- Top Esports HUD Header -->
-      <div class="esports-hud">
-        <!-- Player 1 Card -->
-        <div class="hud-player-card player-side">
-          <div class="hud-avatar" id="hudPlayerAvatar">⚡</div>
-          <div class="hud-info">
-            <span class="hud-name" id="hudPlayerName">PLAYER 1</span>
-            <span class="hud-symbol symbol-X" id="hudPlayerSymbolBadge">MARK: X</span>
+      <ul class="sidebar-menu">
+        <li><a href="#dashboard" class="active"><span class="menu-icon">📊</span> Dashboard</a></li>
+        <li><a href="#classification"><span class="menu-icon">📝</span> Text Classification</a></li>
+        <li><a href="#nlp-processing"><span class="menu-icon">🔤</span> NLP Processing</a></li>
+        <li><a href="#tfidf-features"><span class="menu-icon">📈</span> TF-IDF Features</a></li>
+        <li><a href="#classifier-comparison"><span class="menu-icon">⚖️</span> Classifier Comparison</a></li>
+        <li><a href="#explainability"><span class="menu-icon">🔍</span> Explainability (XAI)</a></li>
+        <li><a href="#ai-ethics"><span class="menu-icon">🛡️</span> AI Ethics</a></li>
+        <li><a href="#how-it-works"><span class="menu-icon">⚙️</span> How It Works</a></li>
+        <li><a href="#model-info"><span class="menu-icon">ℹ️</span> Model Information</a></li>
+        <li><a href="#about-project"><span class="menu-icon">📖</span> About Project</a></li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        College Practical Demo &bull; Antigravity AI
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      
+      <!-- Sticky Top Header -->
+      <header class="top-header">
+        <div>
+          <h1>NLP-Based Text Classification & Explainable AI</h1>
+          <p>Real Machine Learning sentiment prediction pipeline with feature attribution</p>
+        </div>
+        <div class="header-badges">
+          <span class="tech-badge">Python</span>
+          <span class="tech-badge">scikit-learn</span>
+          <span class="tech-badge">TF-IDF</span>
+          <span class="tech-badge">Flask</span>
+        </div>
+      </header>
+      
+      <main class="main-content">
+        
+        <!-- Error Alert Banner -->
+        <div id="error-alert" class="alert alert-danger" style="display: none;">
+          <span>⚠️</span>
+          <span class="alert-message">Error message goes here.</span>
+        </div>
+        
+        <!-- Section 1: Dashboard / Main Text Input -->
+        <section id="dashboard" class="section-block">
+          
+          <!-- Preset Demo Examples -->
+          <div class="card">
+            <div class="card-title">
+              <span>💡 Clickable Demo Examples</span>
+              <span style="font-size: 12px; font-weight: normal; color: var(--text-muted);">Select an example to populate text input</span>
+            </div>
+            <div class="demo-examples-container">
+              <button class="demo-btn" data-text="I absolutely love this product. It is amazing!">1. "I absolutely love this product. It is amazing!"</button>
+              <button class="demo-btn" data-text="The service was terrible and very disappointing.">2. "The service was terrible and very disappointing."</button>
+              <button class="demo-btn" data-text="The package arrived this morning.">3. "The package arrived this morning."</button>
+              <button class="demo-btn" data-text="This application is excellent and easy to use.">4. "This application is excellent and easy to use."</button>
+              <button class="demo-btn" data-text="The experience was horrible and frustrating.">5. "The experience was horrible and frustrating."</button>
+            </div>
           </div>
-        </div>
-
-        <div class="hud-vs">VS</div>
-
-        <!-- Player 2 / AI Card -->
-        <div class="hud-player-card ai-side">
-          <div class="hud-info align-right">
-            <span class="hud-name" id="hudP2Name">CYBER AI</span>
-            <span class="hud-sub" id="hudAiDiffBadge">HARD MINIMAX</span>
+          
+          <!-- Text Input Form & Selected Classifier -->
+          <div id="classification" class="card">
+            <div class="card-title">
+              <span>📝 Main Prediction Input</span>
+            </div>
+            
+            <div class="form-group">
+              <label for="text-input" class="form-label">Enter Sentence for Sentiment Analysis:</label>
+              <textarea id="text-input" class="text-area-input" placeholder="Type or paste any sentence here to analyze its sentiment..."></textarea>
+              <div id="char-counter" style="text-align: right; font-size: 12px; color: var(--text-muted); margin-top: 4px;">0 / 1000 characters</div>
+            </div>
+            
+            <div class="form-row">
+              <div style="flex-grow: 1;">
+                <label for="classifier-select" class="form-label">Select Classifier Model:</label>
+                <select id="classifier-select" class="select-control" style="width: 100%;">
+                  <option value="Logistic Regression" selected>Logistic Regression</option>
+                  <option value="Multinomial Naive Bayes">Multinomial Naive Bayes</option>
+                  <option value="Linear SVM">Linear SVM (Support Vector Machine)</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="action-buttons">
+              <button id="classify-btn" class="btn btn-primary">⚡ Classify Text</button>
+              <button id="compare-btn" class="btn btn-secondary">⚖️ Compare Classifiers</button>
+              <button id="clear-btn" class="btn btn-outline">🗑️ Clear</button>
+            </div>
           </div>
-          <div class="hud-avatar ai-avatar" id="hudP2Avatar">🤖</div>
-        </div>
-      </div>
-
-      <!-- Live AI Terminal Log Ticker -->
-      <div class="ai-terminal" id="aiTerminal">
-        <span class="terminal-prefix">[SYSTEM LOG]:</span> 
-        <span class="terminal-text" id="terminalText">Arena Ready. Waiting for Player move...</span>
-      </div>
-
-      <!-- Scoreboard HUD -->
-      <section class="scoreboard" aria-label="Game Scores">
-        <div class="score-card player-score">
-          <span class="score-label" id="scoreLabelPlayer">P1</span>
-          <span class="score-value" id="scorePlayer">0</span>
-        </div>
-        <div class="score-card ties-score">
-          <span class="score-label">DRAWS</span>
-          <span class="score-value" id="scoreTies">0</span>
-        </div>
-        <div class="score-card ai-score">
-          <span class="score-label" id="scoreLabelP2">AI</span>
-          <span class="score-value" id="scoreAi">0</span>
-        </div>
-      </section>
-
-      <!-- 10-Second Move Timer Gauge -->
-      <div class="timer-container">
-        <div class="timer-header">
-          <span class="timer-title" id="timerTitle">⏳ MOVE TIMER</span>
-          <span class="timer-seconds" id="timerSeconds">10s</span>
-        </div>
-        <div class="timer-bar-bg">
-          <div class="timer-bar-fill" id="timerBarFill"></div>
-        </div>
-      </div>
-
-      <!-- Turn Status Bar -->
-      <div class="turn-status" id="statusMessage">
-        Your Turn <span class="turn-badge X">X</span>
-      </div>
-
-      <!-- Game Board Grid -->
-      <div class="board-wrapper">
-        <div class="board" id="board" role="grid" aria-label="Tic Tac Toe Grid">
-          <button class="cell" data-index="0" aria-label="Cell 1"></button>
-          <button class="cell" data-index="1" aria-label="Cell 2"></button>
-          <button class="cell" data-index="2" aria-label="Cell 3"></button>
-          <button class="cell" data-index="3" aria-label="Cell 4"></button>
-          <button class="cell" data-index="4" aria-label="Cell 5"></button>
-          <button class="cell" data-index="5" aria-label="Cell 6"></button>
-          <button class="cell" data-index="6" aria-label="Cell 7"></button>
-          <button class="cell" data-index="7" aria-label="Cell 8"></button>
-          <button class="cell" data-index="8" aria-label="Cell 9"></button>
-        </div>
-      </div>
-
-      <!-- Footer Action Buttons -->
-      <footer class="app-actions">
-        <button class="btn-action" id="mainMenuBtn">
-          ⚙️ MENU
-        </button>
-        <button class="btn-action btn-primary" id="resetBtn">
-          🔄 NEW ROUND
-        </button>
-        <button class="btn-action" id="soundToggleBtn">
-          🔊 AUDIO: ON
-        </button>
-        <button class="btn-action btn-icon-only" id="clearScoresBtn" title="Reset Scores">
-          🗑️
-        </button>
-      </footer>
-    </main>
-  </div>
-
-  <!-- Game Over Victory / Defeat Modal -->
-  <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-icon" id="modalIcon">🏆</div>
-      <h2 class="modal-title win" id="modalTitle">VICTORY!</h2>
-      <p class="modal-subtitle" id="modalSubtitle">Outstanding strategy!</p>
-      <button class="btn-action btn-primary" id="modalPlayAgain" style="width: 100%; margin-top: 0.5rem;">
-        NEXT ROUND 🚀
-      </button>
+          
+          <!-- Side-by-Side Comparison Container (Hidden by default) -->
+          <div id="compare-results-card" class="card" style="display: none; background-color: #f8fafc;">
+            <div class="card-title">
+              <span>⚖️ Side-by-Side Classifier Comparison Results</span>
+            </div>
+            <div id="compare-text-quote" style="font-style: italic; color: var(--text-muted); margin-bottom: 16px;"></div>
+            <div id="compare-cards-container" class="grid-3">
+              <!-- Comparison cards dynamically injected here -->
+            </div>
+          </div>
+          
+          <!-- Main Prediction Badge & Confidence Card -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">PREDICTION</div>
+              <div class="prediction-box">
+                <span id="prediction-badge" class="badge-label badge-positive">Positive</span>
+                <div id="prediction-confidence" class="confidence-score">92.5%</div>
+                <div class="confidence-caption">Model Confidence</div>
+                <div id="prediction-model" style="font-size: 13px; font-weight: 600; margin-top: 8px; color: var(--primary);">
+                  Logistic Regression
+                </div>
+              </div>
+            </div>
+            
+            <!-- Class Probabilities Card -->
+            <div class="card">
+              <div class="card-title">
+                <span>Confidence / Probabilities</span>
+                <span id="prob-type-notice" style="font-size: 11px; color: var(--text-muted); font-weight: normal;">Native Probability</span>
+              </div>
+              
+              <div class="prob-item">
+                <div class="prob-label">
+                  <span>Positive Sentiment</span>
+                  <span id="prob-val-pos">0%</span>
+                </div>
+                <div class="progress-track">
+                  <div id="prob-bar-pos" class="progress-fill fill-positive" style="width: 0%;"></div>
+                </div>
+              </div>
+              
+              <div class="prob-item">
+                <div class="prob-label">
+                  <span>Neutral Sentiment</span>
+                  <span id="prob-val-neu">0%</span>
+                </div>
+                <div class="progress-track">
+                  <div id="prob-bar-neu" class="progress-fill fill-neutral" style="width: 0%;"></div>
+                </div>
+              </div>
+              
+              <div class="prob-item">
+                <div class="prob-label">
+                  <span>Negative Sentiment</span>
+                  <span id="prob-val-neg">0%</span>
+                </div>
+                <div class="progress-track">
+                  <div id="prob-bar-neg" class="progress-fill fill-negative" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 2: NLP Processing Pipeline -->
+        <section id="nlp-processing" class="section-block">
+          <div class="section-header">
+            <h2>🔤 NLP Processing Pipeline</h2>
+            <p>Step-by-step transformation of actual user text in the preprocessing pipeline</p>
+          </div>
+          
+          <div class="card">
+            <div class="pipeline-container">
+              <div class="pipeline-step">
+                <div class="pipeline-step-header">1. Original Text</div>
+                <div id="nlp-original" class="pipeline-step-content">—</div>
+              </div>
+              
+              <div class="pipeline-arrow">↓</div>
+              
+              <div class="pipeline-step">
+                <div class="pipeline-step-header">2. Cleaned Text (Lowercased & Punctuation Removed)</div>
+                <div id="nlp-cleaned" class="pipeline-step-content">—</div>
+              </div>
+              
+              <div class="pipeline-arrow">↓</div>
+              
+              <div class="pipeline-step">
+                <div class="pipeline-step-header">3. Tokens (Word Tokenization)</div>
+                <div id="nlp-tokens" class="token-chip-container">—</div>
+              </div>
+              
+              <div class="pipeline-arrow">↓</div>
+              
+              <div class="pipeline-step">
+                <div class="pipeline-step-header">4. Processed Text (Stop-words Removed & Stemmed)</div>
+                <div id="nlp-processed" class="pipeline-step-content">—</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 3: TF-IDF Feature Extraction -->
+        <section id="tfidf-features" class="section-block">
+          <div class="section-header">
+            <h2>📈 Feature Extraction – TF-IDF</h2>
+            <p>TF-IDF converts text into numerical features based on how important each word is within the dataset.</p>
+          </div>
+          
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Important Words & TF-IDF Scores</div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Term / N-gram</th>
+                      <th>TF-IDF Score</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tfidf-table-body">
+                    <tr><td colspan="2" class="text-muted">Enter text above to extract TF-IDF features.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-title">TF-IDF Visualization</div>
+              <div class="chart-box">
+                <canvas id="tfidf-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 4 & 5: Machine Learning Classifiers & Classifier Comparison -->
+        <section id="classifier-comparison" class="section-block">
+          <div class="section-header">
+            <h2>⚖️ Classifier Comparison Benchmark</h2>
+            <p>Real evaluation metrics calculated on the 20% test dataset split</p>
+          </div>
+          
+          <div class="card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Classifier</th>
+                    <th>Accuracy</th>
+                    <th>Precision (Macro)</th>
+                    <th>Recall (Macro)</th>
+                    <th>F1 Score (Macro)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for name, metrics in model_info.classifier_metrics.items() %}
+                  <tr>
+                    <td><strong>{{ name }}</strong></td>
+                    <td><span class="tech-badge" style="background:#dbeafe; color:#1e40af;">{{ (metrics.accuracy * 100) | round(2) }}%</span></td>
+                    <td>{{ (metrics.precision * 100) | round(2) }}%</td>
+                    <td>{{ (metrics.recall * 100) | round(2) }}%</td>
+                    <td><strong>{{ (metrics.f1_score * 100) | round(2) }}%</strong></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 8 & 9: Explainable AI (XAI) -->
+        <section id="explainability" class="section-block">
+          <div class="section-header">
+            <h2>🔍 Explainable AI (XAI) – Why did the AI make this prediction?</h2>
+            <p>Feature contribution weights derived directly from the trained machine learning model coefficients</p>
+          </div>
+          
+          <div class="card">
+            <div class="card-title">Highlighted Sentence Tokens</div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+              Green = Positive contributing word &bull; Red = Negative contributing word &bull; Grey = Neutral / Stop-word
+            </p>
+            <div id="highlighted-sentence-box" class="sentence-highlight-box">
+              Enter text and click Classify to see highlighted word tokens.
+            </div>
+          </div>
+          
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-title">Dynamic Explanation Summary</div>
+              <div id="human-explanation-text" style="font-size: 15px; line-height: 1.6; color: var(--text-main);">
+                Classification explanation will be dynamically generated based on model feature attribution weights.
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-title">Word Contribution Impact Weights</div>
+              <div class="chart-box">
+                <canvas id="xai-chart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 10: AI Ethics & Responsible AI -->
+        <section id="ai-ethics" class="section-block">
+          <div class="section-header">
+            <h2>🛡️ AI Ethics & Responsible AI</h2>
+            <p>Essential ethical considerations for deploying natural language processing models</p>
+          </div>
+          
+          <div class="grid-3">
+            <div class="ethics-card">
+              <h3>⚖️ 1. Bias</h3>
+              <p>Machine learning models inherit societal and textual biases present within training corpora. Regular audits are mandatory.</p>
+            </div>
+            
+            <div class="ethics-card">
+              <h3>📊 2. Data Quality</h3>
+              <p>Poor, noisy, or unbalanced training data can produce skewed confidence scores and unreliable real-world predictions.</p>
+            </div>
+            
+            <div class="ethics-card">
+              <h3>🔒 3. Privacy</h3>
+              <p>User input text should be processed securely without storing sensitive personal identifiable information (PII).</p>
+            </div>
+            
+            <div class="ethics-card">
+              <h3>👁️ 4. Transparency</h3>
+              <p>Users must be informed clearly that predictions are produced by probabilistic algorithms, not authoritative human decisions.</p>
+            </div>
+            
+            <div class="ethics-card">
+              <h3>🔍 5. Explainability</h3>
+              <p>Exposing feature importance weights empowers users to understand why an AI model arrived at a specific conclusion.</p>
+            </div>
+            
+            <div class="ethics-card">
+              <h3>🤝 6. Human Oversight</h3>
+              <p>AI predictions must serve as decision-support assistance, leaving final accountability with human decision-makers.</p>
+            </div>
+            
+            <div class="ethics-card" style="grid-column: span 1 / -1;">
+              <h3>⚠️ 7. Misuse</h3>
+              <p>Text classifiers should not be treated as infallible systems or misused for automated censorship without review.</p>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 11: How It Works Section -->
+        <section id="how-it-works" class="section-block">
+          <div class="section-header">
+            <h2>⚙️ How It Works – System Architecture</h2>
+            <p>Click on any step below to explore the end-to-end NLP & ML processing pipeline</p>
+          </div>
+          
+          <div class="card">
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>1. User Text Input</span>
+                <span>▼</span>
+              </div>
+              <div class="accordion-content">
+                The user inputs a natural language sentence (e.g. "I absolutely love this application!").
+              </div>
+            </div>
+            
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>2. NLP Preprocessing</span>
+                <span>▼</span>
+              </div>
+              <div class="accordion-content">
+                The raw string is converted to lowercase, special characters and punctuation are removed.
+              </div>
+            </div>
+            
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>3. Tokenization & Stemming</span>
+                <span>▼</span>
+              </div>
+              <div class="accordion-content">
+                Text is split into discrete word tokens. Common stop-words are filtered out, and Porter Stemmer normalizes words to root forms.
+              </div>
+            </div>
+            
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>4. TF-IDF Feature Extraction</span>
+                <span>▼</span>
+              </div>
+              <div class="accordion-content">
+                Tokens are mapped into numerical sparse vectors based on Term Frequency (TF) and Inverse Document Frequency (IDF) relative to the training set.
+              </div>
+            </div>
+            
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>5. Machine Learning Classifier</span>
+                <span>▼</span>
+              </div>
+              <div class="accordion-content">
+                The TF-IDF vector is fed into the selected classifier (Logistic Regression, Naive Bayes, or Linear SVM) to calculate decision scores.
+              </div>
+            </div>
+            
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>6. Prediction & Confidence</span>
+                <span>▼</span>
+              </div>
+              <div class="accordion-content">
+                The highest probability class (Positive, Negative, or Neutral) is selected as the prediction output alongside the confidence score.
+              </div>
+            </div>
+            
+            <div class="accordion-item">
+              <div class="accordion-header">
+                <span>7. Explainable AI (XAI) Attribution</span>
+                <span>▼</span>
+              </div>
+              <div class="accordion-content">
+                Model weight parameters are extracted to identify positive and negative contributing words, highlighting their influence on the prediction.
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 12: Model Information -->
+        <section id="model-info" class="section-block">
+          <div class="section-header">
+            <h2>ℹ️ Model Information & Dataset Statistics</h2>
+            <p>Actual system metrics generated dynamically from the underlying scikit-learn models</p>
+          </div>
+          
+          <div class="grid-3">
+            <div class="card">
+              <div class="card-title">Total Dataset Size</div>
+              <div style="font-size: 32px; font-weight: 800; color: var(--primary);">{{ model_info.total_dataset_samples }}</div>
+              <div style="font-size: 13px; color: var(--text-muted);">Labeled sentiment text samples</div>
+            </div>
+            
+            <div class="card">
+              <div class="card-title">Train / Test Split</div>
+              <div style="font-size: 28px; font-weight: 800; color: var(--text-main);">
+                {{ model_info.training_samples }} / {{ model_info.testing_samples }}
+              </div>
+              <div style="font-size: 13px; color: var(--text-muted);">80% Train &bull; 20% Stratified Test</div>
+            </div>
+            
+            <div class="card">
+              <div class="card-title">TF-IDF Vocabulary Size</div>
+              <div style="font-size: 32px; font-weight: 800; color: var(--success);">{{ model_info.num_tfidf_features }}</div>
+              <div style="font-size: 13px; color: var(--text-muted);">Extracted n-gram feature terms</div>
+            </div>
+          </div>
+        </section>
+        
+        <!-- Section 15: About Project -->
+        <section id="about-project" class="section-block">
+          <div class="section-header">
+            <h2>📖 About This Project</h2>
+          </div>
+          
+          <div class="card">
+            <p style="font-size: 15px; line-height: 1.8; color: var(--text-main);">
+              This mini AI application demonstrates Natural Language Processing, TF-IDF feature extraction, machine-learning classification, and Explainable AI. The application shows how raw human language can be processed and classified while providing users with an understandable explanation of the model's prediction.
+            </p>
+          </div>
+        </section>
+        
+      </main>
     </div>
   </div>
 
-  <!-- JavaScript Controller -->
-  <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
