@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Golf Shot & Course Strategy Planner – STRIPS / Goal-Stack</title>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="golf-theme">
+    <!-- Custom Smooth Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-follower" id="cursor-follower"></div>
+
+    <!-- Celebration Overlay for Goal Achieved -->
+    <div id="celebration-overlay" class="celebration-overlay"></div>
+
+    <div class="app-container">
+        <!-- Golf Header -->
+        <header class="app-header main-header animate-fade-down">
+            <div class="logo-title">
+                <div class="header-icon pulse-glow">
+                    <i class="fa-solid fa-golf-ball-tee"></i>
+                </div>
+                <div>
+                    <h1>AI Golf Shot & Course Strategy Planner</h1>
+                    <p class="subtitle"><i class="fa-solid fa-flag-checkered"></i> STRIPS / Goal-Stack Distance Navigation Engine</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <div class="status-pill">
+                    <span class="live-dot"></span> Course Ready
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Left Panel: Course Setup -->
+            <aside class="panel setup-panel main-card animate-fade-right">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-sliders"></i> Course Setup (Meters)</h2>
+                </div>
+                
+                <div class="setup-group">
+                    <label><i class="fa-solid fa-border-all"></i> Course Grid (Rows × Cols)</label>
+                    <div class="input-row">
+                        <div class="input-wrapper custom-input">
+                            <span>Rows</span>
+                            <input type="number" id="grid-rows" value="4" min="2" max="15">
+                        </div>
+                        <div class="input-wrapper custom-input">
+                            <span>Cols</span>
+                            <input type="number" id="grid-cols" value="5" min="2" max="15">
+                        </div>
+                        <button id="btn-update-grid" class="btn-sm interactive-target" title="Apply course grid dimensions">Apply</button>
+                    </div>
+                </div>
+
+                <div class="setup-group">
+                    <label><i class="fa-solid fa-location-dot"></i> Golfer Tee Position 🏌️ (R, C)</label>
+                    <div class="input-row">
+                        <div class="input-wrapper custom-input">
+                            <span>Row</span>
+                            <input type="number" id="start-r" value="1" min="1">
+                        </div>
+                        <div class="input-wrapper custom-input">
+                            <span>Col</span>
+                            <input type="number" id="start-c" value="1" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setup-group">
+                    <label><i class="fa-solid fa-flag-checkered"></i> Target Hole Position 🚩 (R, C)</label>
+                    <div class="input-row">
+                        <div class="input-wrapper custom-input">
+                            <span>Row</span>
+                            <input type="number" id="goal-r" value="4" min="1">
+                        </div>
+                        <div class="input-wrapper custom-input">
+                            <span>Col</span>
+                            <input type="number" id="goal-c" value="5" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Click Mode Selector -->
+                <div class="setup-group">
+                    <label><i class="fa-solid fa-hand-pointer"></i> Interactive Course Editor</label>
+                    <div class="segmented-control">
+                        <button class="mode-btn active interactive-target" data-mode="obstacle" id="mode-obstacle">
+                            🌲 Hazard
+                        </button>
+                        <button class="mode-btn interactive-target" data-mode="start" id="mode-start">
+                            🏌️ Golfer
+                        </button>
+                        <button class="mode-btn interactive-target" data-mode="goal" id="mode-goal">
+                            🚩 Hole
+                        </button>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="btn-generate" class="btn-primary interactive-target glowing-btn">
+                        <i class="fa-solid fa-bolt"></i> Calculate Shot Strategy
+                    </button>
+                    <button id="btn-example" class="btn-secondary interactive-target">
+                        <i class="fa-solid fa-bookmark"></i> Load Course Scenario
+                    </button>
+                    <button id="btn-reset" class="btn-outline interactive-target">
+                        <i class="fa-solid fa-rotate-right"></i> Reset Course
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Center Panel: Golf Course Grid Visualization -->
+            <main class="panel viz-panel main-card animate-fade-up">
+                <div class="panel-header flex-between">
+                    <h2><i class="fa-solid fa-map-location-dot"></i> Golf Green & Fairway Map (1 Cell = 10m)</h2>
+                    <span id="grid-status-badge" class="status-badge badge-ready">
+                        <i class="fa-solid fa-circle-info"></i> Ready to compute
+                    </span>
+                </div>
+
+                <div class="grid-container main-grid-container">
+                    <div id="grid-board" class="grid-board"></div>
+                </div>
+
+                <!-- Simulation Control Bar -->
+                <div class="simulation-bar main-sim-bar">
+                    <div class="sim-controls">
+                        <button id="btn-run" class="btn-sim interactive-target" disabled title="Run Shot Simulation">
+                            <i class="fa-solid fa-play"></i> Hit Simulation
+                        </button>
+                        <button id="btn-pause" class="btn-sim-secondary interactive-target" disabled title="Pause Simulation">
+                            <i class="fa-solid fa-pause"></i>
+                        </button>
+                        <button id="btn-step-prev" class="btn-sim-secondary interactive-target" disabled title="Step Back">
+                            <i class="fa-solid fa-backward-step"></i>
+                        </button>
+                        <button id="btn-step-next" class="btn-sim-secondary interactive-target" disabled title="Step Forward">
+                            <i class="fa-solid fa-forward-step"></i>
+                        </button>
+                        <button id="btn-restart" class="btn-sim-secondary interactive-target" disabled title="Restart Animation">
+                            <i class="fa-solid fa-arrow-rotate-left"></i>
+                        </button>
+                    </div>
+                    <div class="sim-speed">
+                        <span><i class="fa-solid fa-gauge-high"></i> Speed:</span>
+                        <input type="range" id="speed-slider" min="100" max="1000" step="100" value="400" class="interactive-target">
+                    </div>
+                </div>
+            </main>
+
+            <!-- Right Panel: Planning Details & STRIPS Stack -->
+            <aside class="panel details-panel main-card animate-fade-left">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-brain"></i> Shot Distance & STRIPS Trace</h2>
+                </div>
+
+                <div class="state-summary-card inner-card">
+                    <div class="summary-item">
+                        <span class="label">Tee Position:</span>
+                        <span id="summary-initial" class="code-val">GolfBall at (1,1)</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Target Hole:</span>
+                        <span id="summary-goal" class="code-val">Target at (4,5)</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Total Distance:</span>
+                        <span id="summary-distance" class="code-val highlight">0 Meters</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Current Shot:</span>
+                        <span id="summary-current-action" class="code-val highlight">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">Strategy Status:</span>
+                        <span id="summary-status" class="status-tag">Ready</span>
+                    </div>
+                </div>
+
+                <!-- Goal Stack Trace -->
+                <div class="stack-card inner-card">
+                    <div class="stack-header">
+                        <h3><i class="fa-solid fa-layer-group"></i> Goal Stack Trace</h3>
+                    </div>
+                    <div id="goal-stack-container" class="stack-container">
+                        <div class="stack-empty">Stack empty. Click "Calculate Shot Strategy" to inspect STRIPS stack.</div>
+                    </div>
+                </div>
+
+                <!-- Step-by-step Plan Output -->
+                <div class="plan-output-card">
+                    <div class="output-header flex-between">
+                        <h3><i class="fa-solid fa-list-check"></i> Planned Stroke Sequence</h3>
+                        <span id="step-count-badge" class="badge-neutral">0 Strokes</span>
+                    </div>
+                    <div id="plan-list-container" class="plan-list">
+                        <div class="plan-placeholder">No shot plan generated yet. Select course hazards and click "Calculate Shot Strategy".</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- AI Explanation Section -->
+        <section class="explanation-section animate-fade-up">
+            <div class="explanation-card main-card">
+                <h2><i class="fa-solid fa-graduation-cap"></i> How Golf STRIPS Planning Works</h2>
+                <div class="explanation-grid">
+                    <div class="concept-box inner-card interactive-target">
+                        <div class="concept-icon"><i class="fa-solid fa-play-circle"></i></div>
+                        <h3>1. Initial State</h3>
+                        <p>Golf Tee starting state: <code>At(GolfBall, (1,1))</code>, fairway cells, and tree/water hazards.</p>
+                    </div>
+                    <div class="concept-box inner-card interactive-target">
+                        <div class="concept-icon"><i class="fa-solid fa-bullseye"></i></div>
+                        <h3>2. Goal State</h3>
+                        <p>Target Hole condition to satisfy: <code>At(GolfBall, (4,5))</code>.</p>
+                    </div>
+                    <div class="concept-box inner-card interactive-target">
+                        <div class="concept-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h3>3. Preconditions</h3>
+                        <p>Requirements before hitting ball (ball location, target fairway cell exists and is clear of hazards).</p>
+                    </div>
+                    <div class="concept-box inner-card interactive-target">
+                        <div class="concept-icon"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
+                        <h3>4. Golf Stroke Operators</h3>
+                        <p>Stroke actions: <code>STROKE-NORTH</code>, <code>STROKE-SOUTH</code>, <code>STROKE-WEST</code>, <code>STROKE-EAST</code> (10m per stroke).</p>
+                    </div>
+                    <div class="concept-box inner-card interactive-target">
+                        <div class="concept-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <h3>5. Effects (Add & Delete)</h3>
+                        <p>State transition: <strong>Delete List</strong> removes previous ball location, <strong>Add List</strong> asserts new fairway location.</p>
+                    </div>
+                    <div class="concept-box inner-card interactive-target">
+                        <div class="concept-icon"><i class="fa-solid fa-layer-group"></i></div>
+                        <h3>6. Goal-Stack Mechanism</h3>
+                        <p>Pushes intermediate fairway sub-goals onto stack to decompose course path and navigate into the target hole.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript Controller -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
